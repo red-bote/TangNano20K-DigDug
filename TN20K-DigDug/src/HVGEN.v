@@ -22,8 +22,12 @@ always @(posedge PCLK) begin
 	case (hcnt) //Mas optimo de mmtno 288 312 384 - 289/313/385 - 290/314/386 - 291/315/387 - 292/316/388
 					//Probadas mal 287/311/383 - 288/311/383 - 289/311/383 <-use this original
 					//Probadas mal 294/316/388 - 
-		289: begin HBLK <= 1; HSYN <= 0; hcnt <= hcnt+1; end   //289 //287 Rallyx
-		311: begin HSYN <= 1; hcnt <= hcnt+1; end              //311
+		// blanking from 288 (shows pixels 1-288, the width of the picture). Sync after a
+		// front porch, as the Mappy core (hvgen.v): without one, VGA monitors shift the
+		// picture right and lose the right-hand columns
+		288: begin HBLK <= 1; hcnt <= hcnt+1; end
+		311: begin HSYN <= 0; hcnt <= hcnt+1; end
+		342: begin HSYN <= 1; hcnt <= hcnt+1; end
 		383: begin                                             //383
 			HBLK <= 0; HSYN <= 1; hcnt <= 0;
 			case (vcnt)

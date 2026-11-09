@@ -129,7 +129,11 @@ wire [4:0] CMIX = SPCOL[4] ? {1'b1,SPCOL[3:0]} : FGCOL[4] ? {1'b0,FGCOL[3:0]} : 
 palette_rom palet(.clk(VCLK),.addr(CMIX),.data(POUT));
 
 assign PCLK = ~VCLK;
-assign VBLK = (PH<64)&(PV==224);
+// VBLK clocks the input sampling in DIGDUG_CUSIO.v: registered, so the decode of the
+// counters cannot glitch it.
+reg VBLKr;
+always @( posedge VCLK ) VBLKr <= (PH<64)&(PV==224);
+assign VBLK = VBLKr;
 
 endmodule
 
